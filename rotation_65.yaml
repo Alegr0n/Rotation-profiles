@@ -29,8 +29,8 @@ config:
     label: "Lay on Hands HP %"
     type: slider
     min: 10
-    max: 30
-    default: 20
+    max: 35
+    default: 25
 
   divine_protection_threshold:
     label: "Divine Protection HP %"
@@ -54,45 +54,45 @@ config:
     default: 15
 
   avenging_wrath_members:
-    label: "Avenging Wrath - members below 70%"
+    label: "Avenging Wrath - below 70%"
     type: slider
     min: 1
     max: 5
     default: 2
 
   aura_mastery_members:
-    label: "Aura Mastery - members below 65%"
+    label: "Aura Mastery - below 70%"
     type: slider
     min: 2
     max: 5
     default: 3
 
   divine_toll_members:
-    label: "Divine Toll - members below 80%"
+    label: "Divine Toll - below 80%"
     type: slider
     min: 1
     max: 5
     default: 2
 
   beacon_of_virtue_members:
-    label: "Beacon of Virtue - members below 85%"
+    label: "Beacon of Virtue - below 85%"
     type: slider
     min: 2
     max: 5
     default: 3
 
   auto_beacon_of_light:
-    label: "Auto Beacon of Light (on tank)"
+    label: "Beacon of Light (Tank)"
     type: checkbox
     default: true
 
   auto_beacon_of_faith:
-    label: "Auto Beacon of Faith (on DPS)"
+    label: "Beacon of Faith (DPS)"
     type: checkbox
     default: true
 
   light_of_dawn_members:
-    label: "Light of Dawn - members below 85%"
+    label: "Light of Dawn - below 85%"
     type: slider
     min: 3
     max: 5
@@ -172,7 +172,7 @@ config:
     default: true
 
   use_blinding_light:
-    label: "Use Blinding Light (AoE Interrupt)"
+    label: "Use Blinding Light"
     type: checkbox
     default: true
 
@@ -242,7 +242,7 @@ lists:
 
   major_cooldowns:
 
-    - aura_mastery,if=group.count(cycle.health.pct<65)>=config.aura_mastery_members
+    - aura_mastery,if=group.count(cycle.health.pct<70)>=config.aura_mastery_members
     - avenging_wrath,if=group.count(cycle.health.pct<70)>=config.avenging_wrath_members
     - avenging_crusader,if=group.count(cycle.health.pct<70)>=config.avenging_wrath_members
     - beacon_of_virtue,if=group.count(cycle.health.pct<85)>=config.beacon_of_virtue_members&var.hp_spendable
@@ -305,10 +305,8 @@ lists:
 
   utility:
 
-    - cleanse,cycle=members,if=config.auto_cleanse&cycle.dispelable.magic
-    - cleanse,cycle=members,if=config.auto_cleanse&cycle.dispelable.poison
-    - cleanse,cycle=members,if=config.auto_cleanse&cycle.dispelable.disease
-    - cleanse.player,if=config.auto_cleanse&player.dispelable
+    - cleanse,cycle=members,if=config.auto_cleanse&cycle.dispelable.list
+    - cleanse.player,if=config.auto_cleanse&player.dispelable.list
     - blessing_of_freedom,cycle=members,if=config.auto_blessing_of_freedom&cycle.debuff.snare.up
 
   trinkets:
@@ -331,12 +329,13 @@ lists:
 
     - call_action_list,name=spell_queue
     - call_action_list,name=sanity_checks
+    - call_action_list,name=auto_heal
     - call_action_list,name=auto_target
     - call_action_list,name=out_of_combat,if=!player.combat
     - return,if=!player.combat
     - return,if=player.channeling
-    - call_action_list,name=interrupts
     - call_action_list,name=emergency
+    - call_action_list,name=interrupts
     - call_action_list,name=utility
     - call_action_list,name=beacon_maintenance
     - call_action_list,name=major_cooldowns
