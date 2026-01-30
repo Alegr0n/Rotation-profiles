@@ -1,4 +1,4 @@
-version: 0.1
+version: 1.1
 author: Alegr0n
 spec: 65
 name: Holy
@@ -189,6 +189,10 @@ variables:
   mo_friendly_valid: mouseover.exists&mouseover.alive&!mouseover.enemy
   mo_enemy_valid: mouseover.exists&mouseover.alive&mouseover.enemy
 
+  racial_defensive_hp: 50
+  racial_emergency_hp: 35
+  racial_heal_ally_hp: 60
+
 lists:
 
   spell_queue:
@@ -312,28 +316,65 @@ lists:
     - judgment,if=holy_power.deficit>=1
     - hammer_of_wrath,if=config.use_hammer_of_wrath&holy_power.deficit>=1
 
+  racial_defensive:
 
-  # MAIN ROTATION
+    - stoneform,if=player.dispelable.list
+    - fireblood,if=player.dispelable.list
+    - will_of_the_forsaken,if=player.feared|player.charmed
+    - escape_artist,if=player.rooted
+    - will_to_survive,if=player.stunned
+    - gift_of_the_naaru.player,if=health.pct<var.racial_emergency_hp
+    - regeneratin,if=health.pct<var.racial_emergency_hp&!player.combat
+    - stoneform,if=health.pct<var.racial_defensive_hp
+    - fireblood,if=health.pct<var.racial_defensive_hp
+
+  racial_offensive:
+
+    - berserking,if=var.avenging_wrath_active
+    - blood_fury,if=var.avenging_wrath_active
+    - ancestral_call,if=var.avenging_wrath_active
+    - fireblood,if=var.avenging_wrath_active&!player.dispelable.list
+    - azerite_surge,if=var.avenging_wrath_active
+
+  racial_cc:
+
+    - war_stomp,if=interrupts.8y.stun.count>=1
+    - quaking_palm,if=target.casting.interruptible
+    - haymaker,if=target.casting.interruptible
+    - bull_rush,if=target.casting.interruptible
+    - wing_buffet,if=target.casting.interruptible
+    - arcane_pulse,if=enemies.8y.count>=3
+
+  racial_utility:
+
+    - arcane_torrent,if=mana.pct<=90
+    - gift_of_the_naaru,target=lowest,if=group.lowest.health.pct<var.racial_heal_ally_hp
+    - bag_of_tricks,target=lowest,if=group.lowest.health.pct<var.racial_heal_ally_hp
+    - shadowmeld,if=target.threat>=3&!player.casting
+    - holo,if=health.pct<30
 
   main:
 
     - call_action_list,name=spell_queue
     - call_action_list,name=sanity_checks
-    # - call_action_list,name=auto_heal
     - call_action_list,name=auto_target
     - call_action_list,name=out_of_combat,if=!player.combat
     - return,if=!player.combat
     - return,if=player.channeling
     - call_action_list,name=emergency
+    - call_action_list,name=racial_defensive
     - call_action_list,name=interrupts
+    - call_action_list,name=racial_cc
     - call_action_list,name=utility
     - call_action_list,name=beacon_maintenance
     - call_action_list,name=major_cooldowns
+    - call_action_list,name=racial_offensive,if=var.avenging_wrath_active
     - call_action_list,name=virtue_window,if=var.beacon_of_virtue_active
     - call_action_list,name=avenging_crusader_rotation,if=buff.avenging_crusader.up
     - call_action_list,name=moving,if=player.moving
     - call_action_list,name=mouseover_friendly,if=config.mouseover_enabled&var.mo_friendly_valid&!player.casting
     - call_action_list,name=mouseover_enemy,if=config.mouseover_enabled&var.mo_enemy_valid&!player.casting
+    - call_action_list,name=racial_utility
     - call_action_list,name=trinkets
     - call_action_list,name=spenders
     - call_action_list,name=generators
