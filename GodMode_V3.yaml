@@ -430,7 +430,7 @@ lists:
     - psychic_scream,if=config.use_psychic_scream&(interrupts.8y.count>=2|interrupts.8y.stun.count>=2)
 
   out_of_combat:
-    - power_word_fortitude.player,if=config.auto_fortitude&group.count(cycle.buff.power_word_fortitude.down.any)>0
+    - power_word_fortitude.player,if=config.auto_fortitude&group.count(cycle.buff.power_word_fortitude.down.any&cycle.range<=40)>0
     - penance,cycle=members,if=cycle.health.pct<config.ooc_penance_threshold&!player.combat&var.penance_ready&cycle.range<=40
     - flash_heal,cycle=members,if=cycle.health.pct<config.ooc_flash_heal_threshold&!player.combat&var.surge_of_light_active&cycle.range<=40
     - flash_heal,cycle=members,if=cycle.health.pct<config.ooc_flash_heal_threshold&!player.combat&cycle.range<=40
