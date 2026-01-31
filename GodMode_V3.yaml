@@ -430,21 +430,21 @@ lists:
     - psychic_scream,if=config.use_psychic_scream&(interrupts.8y.count>=2|interrupts.8y.stun.count>=2)
 
   out_of_combat:
-    - power_word_fortitude.player,if=config.auto_fortitude&group.count(cycle.buff.power_word_fortitude.down.any&cycle.range<=40)>0
-    - penance,cycle=members,if=cycle.health.pct<config.ooc_penance_threshold&!player.combat&var.penance_ready&cycle.range<=40
-    - flash_heal,cycle=members,if=cycle.health.pct<config.ooc_flash_heal_threshold&!player.combat&var.surge_of_light_active&cycle.range<=40
-    - flash_heal,cycle=members,if=cycle.health.pct<config.ooc_flash_heal_threshold&!player.combat&cycle.range<=40
+    - power_word_fortitude.player,if=config.auto_fortitude&group.count(cycle.buff.power_word_fortitude.down.any&cycle.range>0&cycle.range<=40)>0
+    - penance,cycle=members,if=cycle.health.pct<config.ooc_penance_threshold&!player.combat&var.penance_ready&cycle.range>0&cycle.range<=40
+    - flash_heal,cycle=members,if=cycle.health.pct<config.ooc_flash_heal_threshold&!player.combat&var.surge_of_light_active&cycle.range>0&cycle.range<=40
+    - flash_heal,cycle=members,if=cycle.health.pct<config.ooc_flash_heal_threshold&!player.combat&cycle.range>0&cycle.range<=40
 
   pain_suppression_logic:
-    - pain_suppression,cycle=tanks,if=config.pain_suppression_usage>=1&cycle.health.pct<config.pain_suppression_threshold&cycle.buff.pain_suppression.down&cycle.range<=40
-    - pain_suppression,cycle=healers,if=config.pain_suppression_usage>=2&cycle.health.pct<config.pain_suppression_threshold&cycle.buff.pain_suppression.down&cycle.range<=40
-    - pain_suppression,cycle=members,if=config.pain_suppression_usage=3&cycle.health.pct<config.pain_suppression_threshold&cycle.buff.pain_suppression.down&cycle.range<=40
+    - pain_suppression,cycle=tanks,if=config.pain_suppression_usage>=1&cycle.health.pct<config.pain_suppression_threshold&cycle.buff.pain_suppression.down&cycle.range>0&cycle.range<=40
+    - pain_suppression,cycle=healers,if=config.pain_suppression_usage>=2&cycle.health.pct<config.pain_suppression_threshold&cycle.buff.pain_suppression.down&cycle.range>0&cycle.range<=40
+    - pain_suppression,cycle=members,if=config.pain_suppression_usage=3&cycle.health.pct<config.pain_suppression_threshold&cycle.buff.pain_suppression.down&cycle.range>0&cycle.range<=40
 
   major_cooldowns:
     - evangelism,if=group.count(cycle.health.pct<80)>=config.evangelism_members
     - power_infusion.player,if=config.auto_pi&group.count(cycle.health.pct<=60)>=2
     - power_infusion,cycle=dps,if=config.auto_pi&(buff.bloodlust.up|var.evangelism_window)
-    - power_infusion,cycle=dps,if=config.auto_pi&cycle.buff.power_infusion.down&cycle.range<=40&((cycle.buff.avatar.remains>15)|(cycle.buff.recklessness.remains>8)|((cycle.buff.demonic_art_overlord.up|cycle.buff.demonic_art_mother_of_chaos.up|cycle.buff.demonic_art_pitlord.up)&cycle.buff.malevolence.remains>10)|(cycle.buff.tyrants_oblation.remains>10)|(cycle.buff.malevolence.remains>15)|(cycle.buff.ascendance.remains>10)|(cycle.buff.shadow_blades.remains>12)|(cycle.buff.adrenaline_rush.remains>10)|(cycle.buff.deathmark.remains>10&cycle.buff.kingsbane.remains>10)|(cycle.buff.voidform.remains>15)|(cycle.buff.avenging_wrath.remains>15)|(cycle.buff.courage_of_the_white_tiger.remains>29)|(cycle.buff.combustion.remains>8)|(cycle.buff.arcane_surge.remains>14)|(cycle.buff.takedown.remains>6)|(cycle.buff.trueshot.remains>10)|(cycle.buff.bestial_wrath.remains>10|cycle.buff.bloodshed.remains>10)|(cycle.buff.dragonrage.remains>10)|(cycle.buff.incarnation_avatar_of_ashamane.remains>10|cycle.buff.berserk.remains>10)|(cycle.buff.incarnation_chosen_of_elune.remains>10|cycle.buff.celestial_alignment.remains>10)|(cycle.buff.void_metamorphosis.remains>10)|(cycle.buff.metamorphosis.remains>10)|(cycle.buff.army_of_the_dead.remains>10)|(cycle.buff.pillar_of_frost.remains>10|cycle.buff.breath_of_sindragosa.remains>7))
+    - power_infusion,cycle=dps,if=config.auto_pi&cycle.buff.power_infusion.down&cycle.range>0&cycle.range<=40&((cycle.buff.avatar.remains>15)|(cycle.buff.recklessness.remains>8)|((cycle.buff.demonic_art_overlord.up|cycle.buff.demonic_art_mother_of_chaos.up|cycle.buff.demonic_art_pitlord.up)&cycle.buff.malevolence.remains>10)|(cycle.buff.tyrants_oblation.remains>10)|(cycle.buff.malevolence.remains>15)|(cycle.buff.ascendance.remains>10)|(cycle.buff.shadow_blades.remains>12)|(cycle.buff.adrenaline_rush.remains>10)|(cycle.buff.deathmark.remains>10&cycle.buff.kingsbane.remains>10)|(cycle.buff.voidform.remains>15)|(cycle.buff.avenging_wrath.remains>15)|(cycle.buff.courage_of_the_white_tiger.remains>29)|(cycle.buff.combustion.remains>8)|(cycle.buff.arcane_surge.remains>14)|(cycle.buff.takedown.remains>6)|(cycle.buff.trueshot.remains>10)|(cycle.buff.bestial_wrath.remains>10|cycle.buff.bloodshed.remains>10)|(cycle.buff.dragonrage.remains>10)|(cycle.buff.incarnation_avatar_of_ashamane.remains>10|cycle.buff.berserk.remains>10)|(cycle.buff.incarnation_chosen_of_elune.remains>10|cycle.buff.celestial_alignment.remains>10)|(cycle.buff.void_metamorphosis.remains>10)|(cycle.buff.metamorphosis.remains>10)|(cycle.buff.army_of_the_dead.remains>10)|(cycle.buff.pillar_of_frost.remains>10|cycle.buff.breath_of_sindragosa.remains>7))
     - shadowfiend,if=config.shadowfiend_usage!=0&((config.shadowfiend_usage=1)|(config.shadowfiend_usage=2&group.count(cycle.health.pct<80)>=2)|(config.shadowfiend_usage=3&group.count(cycle.health.pct<70)>=3))
     - power_word_barrier,if=group.count(cycle.health.pct<60)>=config.power_word_barrier_members
     - ultimate_penitence,if=group.count(cycle.health.pct<60)>=config.ultimate_penitence_members&group.count(cycle.buff.atonement.up)>=4
@@ -455,14 +455,14 @@ lists:
     - fade,if=target.threat>=3|config.auto_fade
     - penance.player,if=health.pct<50&var.penance_ready
     - flash_heal.player,if=health.pct<55&var.surge_of_light_active
-    - penance,cycle=members,if=cycle.health.pct<55&var.penance_ready&cycle.range<=40
-    - flash_heal,cycle=members,if=cycle.health.pct<config.flash_heal_threshold&var.surge_of_light_active&cycle.range<=40
-    - power_word_shield,cycle=members,if=cycle.health.pct<40&!var.penance_ready&!var.surge_of_light_active&cycle.buff.power_word_shield.down&cycle.range<=40
+    - penance,cycle=members,if=cycle.health.pct<55&var.penance_ready&cycle.range>0&cycle.range<=40
+    - flash_heal,cycle=members,if=cycle.health.pct<config.flash_heal_threshold&var.surge_of_light_active&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=cycle.health.pct<40&!var.penance_ready&!var.surge_of_light_active&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
     - flash_heal.player,if=health.pct<45
-    - flash_heal,cycle=members,if=cycle.health.pct<30&cycle.range<=40
+    - flash_heal,cycle=members,if=cycle.health.pct<30&cycle.range>0&cycle.range<=40
 
   dispel:
-    - purify,cycle=members,if=cycle.dispelable.list&cycle.range<=40
+    - purify,cycle=members,if=cycle.dispelable.list&cycle.range>0&cycle.range<=40
     - purify.player,if=player.dispelable.list
 
   preemptive_shield:
@@ -470,31 +470,31 @@ lists:
     - power_word_shield.player,if=config.preemptive_shield_enabled&target.casting.targeting_me&buff.power_word_shield.down
 
   reactive_shields:
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_438599.up&cycle.debuff.spell_438599.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1235245.up&cycle.debuff.spell_1235245.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_468631.up&cycle.debuff.spell_468631.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1213803.up&cycle.debuff.spell_1213803.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_427635.up&cycle.debuff.spell_427635.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_424426.up&cycle.debuff.spell_424426.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_357827.up&cycle.debuff.spell_357827.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1248211.up&cycle.debuff.spell_1248211.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_347716.up&cycle.debuff.spell_347716.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_350101.up&cycle.debuff.spell_350101.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_431491.up&cycle.debuff.spell_431491.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_461487.up&cycle.debuff.spell_461487.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_461507.up&cycle.debuff.spell_461507.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_438618.up&cycle.debuff.spell_438618.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_465813.up&cycle.debuff.spell_465813.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_431309.up&cycle.debuff.spell_431309.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_325876.up&cycle.debuff.spell_325876.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1235762.up&cycle.debuff.spell_1235762.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1236513.up&cycle.debuff.spell_1236513.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_469799.up&cycle.debuff.spell_469799.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_473713.up&cycle.debuff.spell_473713.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1240097.up&cycle.debuff.spell_1240097.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_356324.up&cycle.debuff.spell_356324.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_432448.up&cycle.debuff.spell_432448.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_428170.up&cycle.debuff.spell_428170.remains>2&cycle.buff.power_word_shield.down&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_438599.up&cycle.debuff.spell_438599.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1235245.up&cycle.debuff.spell_1235245.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_468631.up&cycle.debuff.spell_468631.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1213803.up&cycle.debuff.spell_1213803.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_427635.up&cycle.debuff.spell_427635.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_424426.up&cycle.debuff.spell_424426.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_357827.up&cycle.debuff.spell_357827.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1248211.up&cycle.debuff.spell_1248211.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_347716.up&cycle.debuff.spell_347716.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_350101.up&cycle.debuff.spell_350101.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_431491.up&cycle.debuff.spell_431491.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_461487.up&cycle.debuff.spell_461487.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_461507.up&cycle.debuff.spell_461507.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_438618.up&cycle.debuff.spell_438618.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_465813.up&cycle.debuff.spell_465813.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_431309.up&cycle.debuff.spell_431309.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_325876.up&cycle.debuff.spell_325876.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1235762.up&cycle.debuff.spell_1235762.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1236513.up&cycle.debuff.spell_1236513.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_469799.up&cycle.debuff.spell_469799.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_473713.up&cycle.debuff.spell_473713.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_1240097.up&cycle.debuff.spell_1240097.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_356324.up&cycle.debuff.spell_356324.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_432448.up&cycle.debuff.spell_432448.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=config.reactive_shields_enabled&cycle.debuff.spell_428170.up&cycle.debuff.spell_428170.remains>2&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
 
   evangelism_burst:
     - power_word_radiance,if=var.evangelism_window&group.count(cycle.health.pct<90)>=2
@@ -503,16 +503,16 @@ lists:
     - mind_blast,if=var.evangelism_window
 
   penance_shield_combo:
-    - power_word_shield,cycle=members,if=var.weal_and_woe_ready&cycle.health.pct<config.pws_hp_threshold&cycle.buff.atonement.up&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,target=lowest,if=var.weal_and_woe_ready&group.lowest.health.pct<config.pws_hp_threshold&group.lowest.buff.remains(power_word_shield)=0&group.lowest.range<=40
+    - power_word_shield,cycle=members,if=var.weal_and_woe_ready&cycle.health.pct<config.pws_hp_threshold&cycle.buff.atonement.up&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,target=lowest,if=var.weal_and_woe_ready&group.lowest.health.pct<config.pws_hp_threshold&group.lowest.buff.remains(power_word_shield)=0&group.lowest.range>0&group.lowest.range<=40
 
   atonement_spread:
-    - power_word_radiance,if=cooldown.power_word_radiance.charges>=2&group.count(cycle.health.pct<85&cycle.range<=40)>=config.radiance_members
-    - power_word_radiance,if=!cooldown.evangelism.ready&group.count(cycle.health.pct<85&cycle.range<=40)>=config.radiance_members
-    - penance,cycle=members,if=cycle.buff.atonement.down&var.penance_ready&cycle.range<=40
-    - power_word_shield,cycle=members,if=cycle.buff.power_word_shield.down&cycle.buff.atonement.down&cycle.range<=40
-    - flash_heal,cycle=members,if=cycle.buff.atonement.down&var.surge_of_light_active&cycle.range<=40
-    - plea,cycle=members,if=cycle.buff.atonement.down&cycle.range<=40
+    - power_word_radiance,if=cooldown.power_word_radiance.charges>=2&group.count(cycle.health.pct<85&cycle.range>0&cycle.range<=40)>=config.radiance_members
+    - power_word_radiance,if=!cooldown.evangelism.ready&group.count(cycle.health.pct<85&cycle.range>0&cycle.range<=40)>=config.radiance_members
+    - penance,cycle=members,if=cycle.buff.atonement.down&var.penance_ready&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=cycle.buff.power_word_shield.down&cycle.buff.atonement.down&cycle.range>0&cycle.range<=40
+    - flash_heal,cycle=members,if=cycle.buff.atonement.down&var.surge_of_light_active&cycle.range>0&cycle.range<=40
+    - plea,cycle=members,if=cycle.buff.atonement.down&cycle.range>0&cycle.range<=40
 
   offensive:
     - interrupt_self,if=player.casting&group.count(cycle.health.pct<50)>=1&(var.penance_ready|var.surge_of_light_active)
@@ -534,12 +534,12 @@ lists:
     # - shadow_word_pain.mouseover,if=config.mo_dot&mouseover.debuff.remains(shadow_word_pain)=0
 
   moving:
-    - penance,cycle=members,if=cycle.health.pct<config.penance_healing_threshold&var.penance_ready&cycle.range<=40
-    - power_word_shield,cycle=members,if=var.weal_and_woe_ready&cycle.health.pct<config.pws_hp_threshold&cycle.buff.power_word_shield.down&cycle.range<=40
-    - power_word_shield,cycle=members,if=cycle.buff.power_word_shield.down&cycle.buff.atonement.down&cycle.range<=40
-    - power_word_shield,target=lowest,if=group.lowest.buff.remains(power_word_shield)=0&group.lowest.range<=40
-    - flash_heal,cycle=members,if=var.surge_of_light_active&cycle.health.pct<config.pws_hp_threshold&cycle.range<=40
-    - plea,cycle=members,if=cycle.buff.atonement.down&cycle.health.pct<90&cycle.range<=40
+    - penance,cycle=members,if=cycle.health.pct<config.penance_healing_threshold&var.penance_ready&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=var.weal_and_woe_ready&cycle.health.pct<config.pws_hp_threshold&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=cycle.buff.power_word_shield.down&cycle.buff.atonement.down&cycle.range>0&cycle.range<=40
+    - power_word_shield,target=lowest,if=group.lowest.buff.remains(power_word_shield)=0&group.lowest.range>0&group.lowest.range<=40
+    - flash_heal,cycle=members,if=var.surge_of_light_active&cycle.health.pct<config.pws_hp_threshold&cycle.range>0&cycle.range<=40
+    - plea,cycle=members,if=cycle.buff.atonement.down&cycle.health.pct<90&cycle.range>0&cycle.range<=40
     - shadow_word_pain,if=config.maintain_dot&debuff.shadow_word_pain.remains<5
 
   trinkets:
