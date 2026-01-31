@@ -1,4 +1,4 @@
-version: 1.2
+version: 1.3
 author: Alegr0n
 spec: 65
 name: Holy
@@ -140,11 +140,6 @@ config:
 
   auto_blessing_of_freedom:
     label: "Auto Blessing of Freedom"
-    type: checkbox
-    default: true
-
-  auto_cleanse:
-    label: "Auto Cleanse (Dispel)"
     type: checkbox
     default: true
 
@@ -318,9 +313,9 @@ lists:
 
   utility:
 
-    - cleanse,cycle=members,if=config.auto_cleanse&cycle.dispelable.list
-    - cleanse.player,if=config.auto_cleanse&player.dispelable.list
-    - blessing_of_freedom,cycle=members,if=config.auto_blessing_of_freedom&cycle.debuff.snare.up
+    - cleanse,cycle=members,if=cycle.dispelable.list
+    - blessing_of_freedom.player,if=config.auto_blessing_of_freedom&(player.rooted|player.debuff.snare.up)
+    - blessing_of_freedom,cycle=members,if=config.auto_blessing_of_freedom&(cycle.debuff.snare.up|cycle.debuff.root.up)
 
   trinkets:
 

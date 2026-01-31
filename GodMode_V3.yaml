@@ -1,4 +1,4 @@
-version: 1.2
+version: 1.3
 author: Alegr0n
 spec: 256
 name: Discipline
@@ -174,7 +174,6 @@ config:
     type: checkbox
     default: true
 
-
   # MOUSEOVER
 
   mouseover_enabled:
@@ -211,10 +210,6 @@ config:
     max: 90
     default: 75
 
-  mo_purify:
-    label: "MO: Dispel (Purify)"
-    type: checkbox
-    default: true
 
 
   # MOVEMENT
@@ -463,7 +458,6 @@ lists:
 
   dispel:
     - purify,cycle=members,if=cycle.dispelable.list&cycle.range>0&cycle.range<=40
-    - purify.player,if=player.dispelable.list
 
   preemptive_shield:
 
@@ -527,7 +521,7 @@ lists:
     - pain_suppression.mouseover,if=config.mo_pain_suppression&mouseover.health.pct<config.pain_suppression_threshold&mouseover.buff.remains(pain_suppression)=0
     - penance.mouseover,if=config.mo_penance&mouseover.health.pct<config.mo_penance_threshold&var.penance_ready
     - flash_heal.mouseover,if=config.mo_flash_heal&mouseover.health.pct<config.mo_flash_heal_threshold
-    - purify.mouseover,if=config.mo_purify&mouseover.dispelable.list
+    - purify.mouseover,if=mouseover.dispelable.list
 
   mouseover_enemy:
     # ADD WHEN MOUSEOVERS WORK
