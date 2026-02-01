@@ -5,7 +5,6 @@ name: Discipline
 description: |
   Discipline Priest Oracle rotation for Midnight Pre-Patch.
   Optimized for M+ dungeons.
-  V6 - Added TWW S3 dangerous spell database + reactive shielding.
 
 entry: main
 
