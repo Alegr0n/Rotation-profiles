@@ -352,12 +352,13 @@ lists:
     - return,if=!player.combat
     - return,if=player.channeling
     - call_action_list,name=major_cooldowns
+    - call_action_list,name=auto_heal
     - call_action_list,name=emergency
     - call_action_list,name=racial_defensive
     - call_action_list,name=interrupts
     - call_action_list,name=racial_cc
     - call_action_list,name=utility
-    # - call_action_list,name=beacon_maintenance
+    - call_action_list,name=beacon_maintenance
     - call_action_list,name=racial_offensive,if=var.avenging_wrath_active
     - call_action_list,name=virtue_window,if=var.beacon_of_virtue_active
     - call_action_list,name=avenging_crusader_rotation,if=buff.avenging_crusader.up
