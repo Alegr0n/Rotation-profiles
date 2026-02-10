@@ -211,7 +211,6 @@ lists:
     - lay_on_hands,cycle=members,interrupt=true,if=cycle.health.pct<config.lay_on_hands_threshold
     - divine_protection,if=health.pct<config.divine_protection_threshold
     - divine_protection,if=defensives.ready&health.pct<80
-    - divine_protection,if=health.pct<50
     - blessing_of_sacrifice,cycle=tanks,if=cycle.health.pct<config.blessing_of_sacrifice_threshold&health.pct>40
     - holy_shock,cycle=members,if=cycle.health.pct<50&var.holy_shock_ready
     # - word_of_glory.player,if=health.pct<50&var.hp_spendable

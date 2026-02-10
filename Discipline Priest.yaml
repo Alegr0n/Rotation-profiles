@@ -421,7 +421,6 @@ lists:
   high_priority_healing:
     - desperate_prayer,if=health.pct<config.desperate_prayer_threshold
     - desperate_prayer,if=defensives.ready&health.pct<70
-    - desperate_prayer,if=health.pct<65
     # - power_word_shield.player,if=health.pct<55&buff.power_word_shield.down
     - power_word_shield,cycle=members,if=cycle.health.pct<55&cycle.buff.power_word_shield.down
     - fade,if=target.threat>=3|config.auto_fade
