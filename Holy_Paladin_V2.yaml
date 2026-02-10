@@ -184,7 +184,6 @@ lists:
     - return,if=mounted
     - return,if=!state.rotation
     - return,if=state.blocked_inputs
-    - return,if=player.cc
     - return,if=player.loot_nearby
 
   interrupts:
@@ -366,6 +365,7 @@ lists:
     - call_action_list,name=racial_defensive
     - call_action_list,name=interrupts
     - call_action_list,name=racial_cc
+    - return,if=player.cc
     - call_action_list,name=utility
     - call_action_list,name=beacon_maintenance
     - call_action_list,name=racial_offensive,if=var.avenging_wrath_active
