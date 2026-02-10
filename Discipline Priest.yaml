@@ -391,7 +391,6 @@ lists:
     - return,if=mounted
     - return,if=!state.rotation
     - return,if=state.blocked_inputs
-    - return,if=player.cc
     - return,if=player.loot_nearby
 
   interrupts:
@@ -568,6 +567,7 @@ lists:
     - call_action_list,name=racial_cc
     - call_action_list,name=pain_suppression_logic
     - call_action_list,name=racial_defensive
+    - return,if=player.cc
     - call_action_list,name=dispel
     - call_action_list,name=reactive_shields
     - call_action_list,name=auto_heal
