@@ -571,6 +571,7 @@ lists:
     - call_action_list,name=racial_defensive
     - call_action_list,name=dispel
     - call_action_list,name=reactive_shields
+    - call_action_list,name=auto_heal
     - call_action_list,name=preemptive_shield
     - call_action_list,name=major_cooldowns
     - call_action_list,name=racial_offensive,if=var.evangelism_window
