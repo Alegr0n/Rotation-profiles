@@ -1,4 +1,4 @@
-version: 1.4
+version: 1.5
 author: Alegr0n
 spec: 65
 name: Holy
@@ -90,28 +90,28 @@ config:
     type: slider
     min: 60
     max: 90
-    default: 75
+    default: 80
 
   holy_shock_healing_threshold:
     label: "Holy Shock Healing HP %"
     type: slider
     min: 70
     max: 95
-    default: 80
+    default: 85
 
   flash_of_light_threshold:
     label: "Flash of Light HP %"
     type: slider
     min: 30
     max: 80
-    default: 40
+    default: 45
 
   holy_light_threshold:
     label: "Holy Light HP %"
     type: slider
     min: 60
     max: 90
-    default: 80
+    default: 85
 
   mouseover_enabled:
     label: "Enable Mouseover Healing"
@@ -158,6 +158,7 @@ variables:
   tyrs_deliverance_active: buff.tyrs_deliverance.up
   divine_favor_active: buff.divine_favor.up
   sun_sear_active: buff.sun_sear.up
+  empyrean_legacy: buff.empyrean_legacy.up
 
   holy_shock_ready: cooldown.holy_shock.charges>=1
   divine_toll_ready: cooldown.divine_toll.ready
@@ -167,7 +168,7 @@ variables:
   group_emergency: group.count(cycle.health.pct<50)>=2
   group_critical: group.count(cycle.health.pct<30)>=1
 
-  mo_friendly_valid: mouseover.exists&mouseover.alive&!mouseover.enemy
+  mo_friendly_valid: mouseover.exists&mouseover.alive&mouseover.friendly
 
   racial_defensive_hp: 50
   racial_emergency_hp: 35
@@ -187,6 +188,7 @@ lists:
     - return,if=mounted
     - return,if=!state.rotation
     - return,if=state.blocked_inputs
+    - return,if=player.loot_nearby
 
   interrupts:
 
@@ -202,19 +204,24 @@ lists:
     - beacon_of_faith,cycle=dps,if=config.auto_beacon_of_faith&cycle.buff.beacon_of_faith.down
     - redemption,cycle=members,if=cycle.dead
     - word_of_glory,cycle=members,if=var.hp_spendable&cycle.health.pct<70
+    - eternal_flame,cycle=members,if=var.hp_spendable&cycle.health.pct<70
     - holy_shock,cycle=members,if=cycle.health.pct<80&var.holy_shock_ready
     - flash_of_light,cycle=members,if=cycle.health.pct<55
 
   emergency:
-    - divine_shield,if=health.pct<config.divine_shield_threshold
+    - divine_shield,interrupt=true,if=health.pct<config.divine_shield_threshold
     # - lay_on_hands.player,if=health.pct<config.lay_on_hands_threshold
-    - lay_on_hands,cycle=tanks,if=cycle.health.pct<config.lay_on_hands_threshold
-    - lay_on_hands,cycle=members,if=cycle.health.pct<config.lay_on_hands_threshold
+    - lay_on_hands,cycle=tanks,interrupt=true,if=cycle.health.pct<config.lay_on_hands_threshold
+    - lay_on_hands,cycle=members,interrupt=true,if=cycle.health.pct<config.lay_on_hands_threshold
     - divine_protection,if=health.pct<config.divine_protection_threshold
+    - divine_protection,if=defensives.ready&health.pct<80
     - blessing_of_sacrifice,cycle=tanks,if=cycle.health.pct<config.blessing_of_sacrifice_threshold&health.pct>40
     - holy_shock,cycle=members,if=cycle.health.pct<50&var.holy_shock_ready
     # - word_of_glory.player,if=health.pct<50&var.hp_spendable
     - word_of_glory,cycle=members,if=cycle.health.pct<50&var.hp_spendable
+    - eternal_flame,cycle=members,if=cycle.health.pct<50&var.hp_spendable
+    - word_of_glory,if=var.hp_spendable&casting_target.health.pct<60
+    - eternal_flame,if=var.hp_spendable&casting_target.health.pct<60
     # - flash_of_light.player,if=health.pct<40&var.infusion_of_light
     - flash_of_light,cycle=members,if=cycle.health.pct<40&var.infusion_of_light
 
@@ -231,6 +238,7 @@ lists:
   virtue_window:
 
     - word_of_glory,cycle=members,if=var.hp_spendable&cycle.health.pct<85
+    - eternal_flame,cycle=members,if=var.hp_spendable&cycle.health.pct<85
     - holy_shock,cycle=members,if=cycle.health.pct<config.holy_shock_healing_threshold&var.holy_shock_ready
     - judgment,if=holy_power.deficit>=1
 
@@ -242,15 +250,21 @@ lists:
 
   spenders:
 
+    - word_of_glory,cycle=members,if=var.empyrean_legacy&cycle.health.pct<90
+    - eternal_flame,cycle=members,if=var.empyrean_legacy&cycle.health.pct<90
     - light_of_dawn,if=var.sun_sear_active&var.hp_spendable&group.count(cycle.health.pct<90)>=2
     - word_of_glory,cycle=members,if=var.sun_sear_active&var.hp_spendable&cycle.health.pct<85
+    - eternal_flame,cycle=members,if=var.sun_sear_active&var.hp_spendable&cycle.health.pct<85
     - light_of_dawn,if=var.suns_avatar_active&var.hp_spendable&group.count(cycle.health.pct<90)>=2
     - word_of_glory,cycle=members,if=var.suns_avatar_active&var.hp_spendable&cycle.health.pct<85
+    - eternal_flame,cycle=members,if=var.suns_avatar_active&var.hp_spendable&cycle.health.pct<85
     - light_of_dawn,if=var.hp_capped&group.count(cycle.health.pct<90)>=2
     - word_of_glory,cycle=members,if=var.hp_capped&cycle.health.pct<90
+    - eternal_flame,cycle=members,if=var.hp_capped&cycle.health.pct<90
     - shield_of_the_righteous,if=var.hp_capped
     - light_of_dawn,if=!var.beacon_of_virtue_active&group.count(cycle.health.pct<85)>=config.light_of_dawn_members&var.hp_spendable
     - word_of_glory,cycle=members,if=var.hp_spendable&cycle.health.pct<config.word_of_glory_threshold
+    - eternal_flame,cycle=members,if=var.hp_spendable&cycle.health.pct<config.word_of_glory_threshold
     - shield_of_the_righteous,if=var.hp_spendable&!var.group_needs_healing
 
   dawnlight_maintenance:
@@ -271,11 +285,19 @@ lists:
     - holy_light,cycle=members,if=var.infusion_of_light&cycle.health.pct<config.holy_light_threshold
     - consecration,if=!buff.consecration.up
 
+  preemptive_healing:
+
+    - word_of_glory,if=var.hp_spendable&casting_target.health.pct<70
+    - eternal_flame,if=var.hp_spendable&casting_target.health.pct<70
+    - holy_shock,if=var.holy_shock_ready&casting_target.health.pct<80
+    - flash_of_light,if=var.infusion_of_light&casting_target.health.pct<60
+
   mouseover_friendly:
 
     - intercession.mouseover,if=mouseover.dead&health.pct>20
     - lay_on_hands.mouseover,if=config.mo_lay_on_hands&mouseover.health.pct<config.lay_on_hands_threshold
     - word_of_glory.mouseover,if=config.mo_word_of_glory&mouseover.health.pct<config.word_of_glory_threshold&var.hp_spendable
+    - eternal_flame.mouseover,if=config.mo_word_of_glory&mouseover.health.pct<config.word_of_glory_threshold&var.hp_spendable
     - holy_shock.mouseover,if=config.mo_holy_shock&mouseover.health.pct<config.holy_shock_healing_threshold&var.holy_shock_ready
     - flash_of_light.mouseover,if=config.mo_flash_of_light&mouseover.health.pct<config.flash_of_light_threshold
 
@@ -294,13 +316,16 @@ lists:
 
     - trinket_1,if=var.trinket1_living_silk&trinket_1.ready&(var.avenging_wrath_active|var.group_emergency)
     - trinket_2,if=var.trinket2_living_silk&trinket_2.ready&(var.avenging_wrath_active|var.group_emergency)
-    - trinket_1,if=!var.trinket1_living_silk&trinket_1.ready&(var.avenging_wrath_active|var.group_emergency)
-    - trinket_2,if=!var.trinket2_living_silk&trinket_2.ready&(var.avenging_wrath_active|var.group_emergency)
+    - trinket_1,if=!var.trinket1_living_silk&trinket_1.ready&trinket_1.sync
+    - trinket_2,if=!var.trinket2_living_silk&trinket_2.ready&trinket_2.sync
+    - trinket_1,if=!var.trinket1_living_silk&trinket_1.ready&var.group_emergency
+    - trinket_2,if=!var.trinket2_living_silk&trinket_2.ready&var.group_emergency
 
   moving:
 
     - holy_shock,cycle=members,if=cycle.health.pct<config.holy_shock_healing_threshold&var.holy_shock_ready
     - word_of_glory,cycle=members,if=var.hp_spendable&cycle.health.pct<config.word_of_glory_threshold
+    - eternal_flame,cycle=members,if=var.hp_spendable&cycle.health.pct<config.word_of_glory_threshold
     - light_of_dawn,if=group.count(cycle.health.pct<85)>=config.light_of_dawn_members&var.hp_spendable
     - judgment,if=holy_power.deficit>=1
     - hammer_of_wrath,if=holy_power.deficit>=1
@@ -352,16 +377,19 @@ lists:
     - return,if=!player.combat
     - return,if=player.channeling
     - call_action_list,name=major_cooldowns
+    - call_action_list,name=auto_heal
     - call_action_list,name=emergency
     - call_action_list,name=racial_defensive
     - call_action_list,name=interrupts
     - call_action_list,name=racial_cc
+    - return,if=player.cc
     - call_action_list,name=utility
     # - call_action_list,name=beacon_maintenance
     - call_action_list,name=racial_offensive,if=var.avenging_wrath_active
     - call_action_list,name=virtue_window,if=var.beacon_of_virtue_active
     - call_action_list,name=avenging_crusader_rotation,if=buff.avenging_crusader.up
     - call_action_list,name=moving,if=player.moving
+    - call_action_list,name=preemptive_healing
     - call_action_list,name=mouseover_friendly,if=config.mouseover_enabled&var.mo_friendly_valid&!player.casting
     - call_action_list,name=racial_utility
     - call_action_list,name=trinkets
