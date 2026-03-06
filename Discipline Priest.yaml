@@ -3,8 +3,9 @@ author: Alegr0n
 spec: 256
 name: Discipline
 description: |
-  Discipline Priest Oracle rotation for Midnight Pre-Patch.
-  Optimized for M+ dungeons.
+  Discipline Priest rotation for Midnight Season 1.
+  Supports both Oracle and Voidweaver hero talents.
+  Compatible with all talent builds. Optimized for M+ dungeons.
 
 entry: main
 
@@ -252,9 +253,15 @@ config:
 
 variables:
 
+  # Hero talent detection
+  is_voidweaver: talent.void_blast
+  is_oracle: "!talent.void_blast"
+
   power_of_dark_side: buff.power_of_the_dark_side.up
   evangelism_window: buff.evangelism.up
   surge_of_light_active: buff.surge_of_light.up
+  entropic_rift_active: buff.entropic_rift.up
+  void_shield_ready: talent.void_shield&var.entropic_rift_active
 
   weal_and_woe_stacks: buff.weal_and_woe.stack
   weal_and_woe_ready: var.weal_and_woe_stacks>=config.weal_and_woe_min_stacks
@@ -415,7 +422,7 @@ lists:
     - power_infusion,cycle=dps,if=config.auto_pi&cycle.buff.power_infusion.down&cycle.range>0&cycle.range<=40&((cycle.buff.avatar.remains>15)|(cycle.buff.recklessness.remains>8)|((cycle.buff.demonic_art_overlord.up|cycle.buff.demonic_art_mother_of_chaos.up|cycle.buff.demonic_art_pitlord.up)&cycle.buff.malevolence.remains>10)|(cycle.buff.tyrants_oblation.remains>10)|(cycle.buff.malevolence.remains>15)|(cycle.buff.ascendance.remains>10)|(cycle.buff.shadow_blades.remains>12)|(cycle.buff.adrenaline_rush.remains>10)|(cycle.buff.deathmark.remains>10&cycle.buff.kingsbane.remains>10)|(cycle.buff.voidform.remains>15)|(cycle.buff.avenging_wrath.remains>15)|(cycle.buff.courage_of_the_white_tiger.remains>29)|(cycle.buff.combustion.remains>8)|(cycle.buff.arcane_surge.remains>14)|(cycle.buff.takedown.remains>6)|(cycle.buff.trueshot.remains>10)|(cycle.buff.bestial_wrath.remains>10|cycle.buff.bloodshed.remains>10)|(cycle.buff.dragonrage.remains>10)|(cycle.buff.incarnation_avatar_of_ashamane.remains>10|cycle.buff.berserk.remains>10)|(cycle.buff.incarnation_chosen_of_elune.remains>10|cycle.buff.celestial_alignment.remains>10)|(cycle.buff.void_metamorphosis.remains>10)|(cycle.buff.metamorphosis.remains>10)|(cycle.buff.army_of_the_dead.remains>10)|(cycle.buff.pillar_of_frost.remains>10|cycle.buff.breath_of_sindragosa.remains>7))
     - shadowfiend,if=config.shadowfiend_usage!=0&((config.shadowfiend_usage=1)|(config.shadowfiend_usage=2&group.count(cycle.health.pct<80)>=2)|(config.shadowfiend_usage=3&group.count(cycle.health.pct<70)>=3))
     - power_word_barrier,if=group.count(cycle.health.pct<60)>=config.power_word_barrier_members
-    - ultimate_penitence,if=group.count(cycle.health.pct<60)>=config.ultimate_penitence_members&group.count(cycle.buff.atonement.up)>=4
+    - ultimate_penitence,if=group.count(cycle.health.pct<60)>=config.ultimate_penitence_members&!var.evangelism_window&group.count(cycle.buff.atonement.up)>=2
 
   high_priority_healing:
     - desperate_prayer,if=health.pct<config.desperate_prayer_threshold
@@ -469,10 +476,17 @@ lists:
   evangelism_burst:
     - power_word_radiance,if=var.evangelism_window&group.count(cycle.health.pct<85)>=2
     - power_word_radiance,if=var.evangelism_window&cooldown.power_word_radiance.charges>=1&group.count(cycle.health.pct<75)>=2
+    - shadow_word_death,if=var.evangelism_window&health.pct>30
     - penance,if=var.evangelism_window&var.penance_ready
     - mind_blast,if=var.evangelism_window
+    - void_blast,if=var.evangelism_window&var.is_voidweaver
+    - halo,if=var.evangelism_window&talent.halo
+    - smite,if=var.evangelism_window
 
   penance_shield_combo:
+    # Void Shield proc - PW:S empowered during Entropic Rift (Voidweaver)
+    - power_word_shield,cycle=members,if=var.void_shield_ready&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
+    # Weal and Woe combo
     - power_word_shield,cycle=members,if=var.weal_and_woe_ready&cycle.health.pct<config.pws_hp_threshold&cycle.buff.atonement.up&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
     - power_word_shield,target=lowest,if=var.weal_and_woe_ready&group.lowest.health.pct<config.pws_hp_threshold&group.lowest.buff.remains(power_word_shield)=0&group.lowest.range>0&group.lowest.range<=40
 
@@ -485,12 +499,25 @@ lists:
     - plea,cycle=members,if=cycle.buff.atonement.down&cycle.range>0&cycle.range<=40
 
   offensive:
-    # interrupt_self removed - using interrupt=true on emergency heals in high_priority_healing
-    - shadow_word_pain,if=debuff.shadow_word_pain.remains<3
+    # DoT maintenance (Purge the Wicked or Shadow Word: Pain)
+    - purge_the_wicked,if=talent.purge_the_wicked&debuff.purge_the_wicked.remains<3
+    - shadow_word_pain,if=!talent.purge_the_wicked&debuff.shadow_word_pain.remains<3
+    # Shadow Word: Death on cooldown (Expiation + Inescapable Torment)
+    - shadow_word_death,if=health.pct>30
+    # Mind Blast
     - mind_blast
+    # Penance with Power of the Dark Side proc
     - penance,if=var.power_of_dark_side&var.penance_ready
+    # Void Blast (Voidweaver - available during Entropic Rift)
+    - void_blast,if=var.is_voidweaver
+    # Penance charge cap
     - penance,if=cooldown.penance.charges>=2
-    - shadow_word_death,if=target.health.pct<=20
+    # Halo / Divine Star (triggers Entropic Rift for Voidweaver, AoE heal+dmg)
+    - halo,if=talent.halo
+    - divine_star,if=talent.divine_star
+    # Regular Penance
+    - penance,if=var.penance_ready
+    # Smite filler
     - smite
 
   mouseover_friendly:
@@ -500,13 +527,16 @@ lists:
     - purify.mouseover,if=mouseover.dispelable.list
 
   moving:
+    - shadow_word_death,if=health.pct>30
     - penance,cycle=members,if=cycle.health.pct<config.penance_healing_threshold&var.penance_ready&cycle.range>0&cycle.range<=40
+    - power_word_shield,cycle=members,if=var.void_shield_ready&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
     - power_word_shield,cycle=members,if=var.weal_and_woe_ready&cycle.health.pct<config.pws_hp_threshold&cycle.buff.power_word_shield.down&cycle.range>0&cycle.range<=40
     - power_word_shield,cycle=members,if=cycle.buff.power_word_shield.down&cycle.buff.atonement.down&cycle.range>0&cycle.range<=40
     - power_word_shield,target=lowest,if=group.lowest.buff.remains(power_word_shield)=0&group.lowest.range>0&group.lowest.range<=40
     - flash_heal,cycle=members,if=var.surge_of_light_active&cycle.health.pct<config.pws_hp_threshold&cycle.range>0&cycle.range<=40
     - plea,cycle=members,if=cycle.buff.atonement.down&cycle.health.pct<90&cycle.range>0&cycle.range<=40
-    - shadow_word_pain,if=debuff.shadow_word_pain.remains<5
+    - purge_the_wicked,if=talent.purge_the_wicked&debuff.purge_the_wicked.remains<5
+    - shadow_word_pain,if=!talent.purge_the_wicked&debuff.shadow_word_pain.remains<5
 
   trinkets:
     - trinket_1,if=var.trinket1_living_silk&trinket_1.ready&config.trinket_usage!=0&((config.trinket_usage=1)|(config.trinket_usage=2&var.evangelism_window)|(config.trinket_usage=3&group.count(cycle.health.pct<config.living_silk_hp)>=config.living_silk_members))
@@ -576,7 +606,7 @@ lists:
     - call_action_list,name=racial_offensive,if=var.evangelism_window
     - call_action_list,name=high_priority_healing
     - call_action_list,name=evangelism_burst,if=var.evangelism_window
-    - call_action_list,name=penance_shield_combo,if=var.weal_and_woe_ready
+    - call_action_list,name=penance_shield_combo,if=var.weal_and_woe_ready|var.void_shield_ready
     - angelic_feather,if=var.use_feather&config.angelic_feather_usage!=0
     - call_action_list,name=moving,if=player.moving
     - call_action_list,name=mouseover_friendly,if=config.mouseover_enabled&var.mo_friendly_valid&!player.casting&!player.channeling
