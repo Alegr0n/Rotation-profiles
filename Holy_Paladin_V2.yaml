@@ -1,4 +1,4 @@
-version: 2.0
+version: 1.6
 author: Alegr0n
 spec: 65
 name: Holy
@@ -108,7 +108,7 @@ config:
     type: slider
     min: 60
     max: 90
-    default: 85
+    default: 75
 
   mouseover_enabled:
     label: "Enable Mouseover Healing"
@@ -234,8 +234,6 @@ lists:
     - word_of_glory,cycle=members,if=cycle.health.pct<40&var.hp_spendable
     - eternal_flame,cycle=members,if=cycle.health.pct<40&var.hp_spendable
     - holy_shock,cycle=members,if=cycle.health.pct<50&var.holy_shock_ready
-    - word_of_glory,if=var.hp_spendable&casting_target.health.pct<60
-    - eternal_flame,if=var.hp_spendable&casting_target.health.pct<60
     - flash_of_light,cycle=members,if=cycle.health.pct<40&var.infusion_of_light
 
   major_cooldowns:
@@ -262,51 +260,36 @@ lists:
     - judgment,if=holy_power.deficit>=1
 
   avenging_crusader_rotation:
-    # During AC: Judgment/HoW/CS damage converts to healing on injured allies
-    # Maximize HP generation+spending = maximize healing throughput
-    # HP capped - spend immediately (LoD primary AoE spender per guides)
+
     - light_of_dawn,if=var.hp_capped&group.count(cycle.health.pct<90)>=2
     - word_of_glory,cycle=members,if=var.hp_capped&cycle.health.pct<80
     - eternal_flame,cycle=members,if=var.hp_capped&cycle.health.pct<80
     - shield_of_the_righteous,if=var.hp_capped&!var.group_needs_healing
-    # Divine Purpose procs - free spender, don't waste
     - light_of_dawn,if=var.divine_purpose&group.count(cycle.health.pct<90)>=2
     - word_of_glory,cycle=members,if=var.divine_purpose&cycle.health.pct<80
     - eternal_flame,cycle=members,if=var.divine_purpose&cycle.health.pct<80
     - shield_of_the_righteous,if=var.divine_purpose&!var.group_needs_healing
-    # HP generators - damage converts to healing during AC, prioritize fast generation
     - judgment,if=holy_power.deficit>=1
     - hammer_of_wrath,if=holy_power.deficit>=1
     - holy_shock,if=var.holy_shock_ready&holy_power.deficit>=1
     - consecration,if=!buff.consecration.up
-    # Hand of Divinity - instant Holy Light procs
     - holy_light,cycle=members,if=var.hand_of_divinity_active&cycle.health.pct<config.holy_light_threshold
-    # Spend HP at 3+ on healing or DPS
     - light_of_dawn,if=var.hp_spendable&group.count(cycle.health.pct<85)>=config.light_of_dawn_members
     - word_of_glory,cycle=members,if=var.hp_spendable&cycle.health.pct<config.word_of_glory_threshold
     - eternal_flame,cycle=members,if=var.hp_spendable&cycle.health.pct<config.word_of_glory_threshold
     - shield_of_the_righteous,if=var.hp_spendable&!var.group_needs_healing
-    # Filler - Infusion of Light Flash of Light
     - flash_of_light,cycle=members,if=var.infusion_of_light&cycle.health.pct<config.flash_of_light_threshold
 
   spenders:
-    # Procs - only heal if someone actually needs it
+    # Proc-based LoD when group needs AoE healing
     - light_of_dawn,if=var.empyrean_legacy&group.count(cycle.health.pct<config.word_of_glory_threshold)>=2
-    - word_of_glory,cycle=members,if=var.empyrean_legacy&cycle.health.pct<config.word_of_glory_threshold
-    - eternal_flame,cycle=members,if=var.empyrean_legacy&cycle.health.pct<config.word_of_glory_threshold
     - light_of_dawn,if=var.sun_sear_active&var.hp_spendable&group.count(cycle.health.pct<config.word_of_glory_threshold)>=2
     - light_of_dawn,if=var.suns_avatar_active&var.hp_spendable&group.count(cycle.health.pct<config.word_of_glory_threshold)>=2
-    # HP capped - SotR first when group healthy, heal if needed
-    - shield_of_the_righteous,if=var.hp_capped&!var.needs_member_healing
     - light_of_dawn,if=var.hp_capped&group.count(cycle.health.pct<config.word_of_glory_threshold)>=config.light_of_dawn_members
-    - word_of_glory,cycle=members,if=var.hp_capped&cycle.health.pct<config.word_of_glory_threshold
-    - eternal_flame,cycle=members,if=var.hp_capped&cycle.health.pct<config.word_of_glory_threshold
-    - shield_of_the_righteous,if=var.hp_capped
-    # Regular spending - SotR when group healthy, heal when needed
-    - shield_of_the_righteous,if=var.hp_spendable&!var.needs_member_healing
     - light_of_dawn,if=!var.beacon_of_virtue_active&group.count(cycle.health.pct<config.word_of_glory_threshold)>=config.light_of_dawn_members&var.hp_spendable&!var.hp_pool_for_toll
-    - word_of_glory,cycle=members,if=var.hp_spendable&!var.hp_pool_for_toll&cycle.health.pct<config.word_of_glory_threshold
-    - eternal_flame,cycle=members,if=var.hp_spendable&!var.hp_pool_for_toll&cycle.health.pct<config.word_of_glory_threshold
+    # DPS HP spender - SotR
+    - shield_of_the_righteous,if=var.hp_capped
+    - shield_of_the_righteous,if=var.hp_spendable&!var.hp_pool_for_toll
 
   dawnlight_maintenance:
     - holy_prism,if=cooldown.holy_prism.ready
@@ -316,7 +299,7 @@ lists:
     - holy_light,cycle=members,if=var.hand_of_divinity_active&cycle.health.pct<config.holy_light_threshold
     - holy_light,cycle=members,if=var.divine_favor_active&var.infusion_of_light&cycle.health.pct<80
     - holy_shock,cycle=members,if=var.tyrs_deliverance_active&cycle.health.pct<90&var.holy_shock_ready
-    - holy_shock,cycle=members,if=var.rising_sunlight_active&var.holy_shock_ready
+    - holy_shock,cycle=members,if=var.rising_sunlight_active&var.holy_shock_ready&cycle.health.pct<config.holy_shock_healing_threshold
     - shield_of_the_righteous,if=var.hp_spendable&!var.group_needs_healing
     - judgment,if=var.righteous_judgment&holy_power.deficit>=1
     - holy_shock,if=var.holy_shock_ready&holy_power.deficit>=1
@@ -337,8 +320,6 @@ lists:
     - flash_of_light,cycle=members,if=cycle.health.pct<config.flash_of_light_threshold
 
   preemptive_healing:
-    - word_of_glory,if=var.hp_spendable&casting_target.health.pct<70
-    - eternal_flame,if=var.hp_spendable&casting_target.health.pct<70
     - holy_shock,if=var.holy_shock_ready&casting_target.health.pct<80
     - flash_of_light,if=var.infusion_of_light&casting_target.health.pct<60
 
@@ -435,6 +416,6 @@ lists:
     - call_action_list,name=racial_utility
     - call_action_list,name=trinkets
     - call_action_list,name=dawnlight_maintenance
-    - call_action_list,name=member_healing,if=var.needs_member_healing
     - call_action_list,name=spenders
+    - call_action_list,name=member_healing,if=var.needs_member_healing
     - call_action_list,name=generators
